@@ -7,3 +7,4 @@ RUN npm run build
 EXPOSE 3000
 FROM nginx:latest
 COPY --from=build /app/build /usr/share/nginx/html/
+CMD ["nginx", "-g", "daemon off;"]
