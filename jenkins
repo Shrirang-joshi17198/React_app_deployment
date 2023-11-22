@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build and Deploy') {
+            steps {
+                script {
+                    // Checkout the code from Git
+                    checkout scm
+
+                    // Determine the branch
+                    def branchName = env.GIT_BRANCH
+
+                    // Run the build and deploy scripts based on the branch
+                    if (branchName == 'origin/dev') {
+                        sh 'docker build -t react_app_img .'
+                        sh 'docker-compose up'
+                        sh 'chmod +x ./build.sh'
+                        sh './build.sh'
+                        sh 'chmod +x ./deploy.sh'
+                        sh './deploy.sh dev'
+                    } else if (branchName == 'origin/main') {
+                        sh 'docker build -t react_app_img .'
+                        sh 'docker-compose up'
+                        sh 'chmod +x ./build.sh'
+                        sh './build.sh'
+                        sh 'chmod +x ./deploy.sh'
+                        sh './deploy.sh prod'
+                    } else {
+                        echo "Skipping build and deploy for branch ${branchName}"
+                    }
+                }
+            }
+        }
+    }
+}
